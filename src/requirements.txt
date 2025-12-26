@@ -1,0 +1,10 @@
+streamlit
+langchain
+langchain-community
+langchain-core
+langchain-google-genai
+langchain-chroma
+sentence-transformers
+pypdf
+fpdf2
+xhtml2pdf

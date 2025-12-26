@@ -1,0 +1,66 @@
+from langchain_google_genai import GoogleGenerativeAI
+from langchain_core.prompts import PromptTemplate
+from langchain_core.output_parsers import StrOutputParser
+
+class AssitenteCurriculo:
+    def __init__(self, api_key, temperature=0.1):
+        self.llm = GoogleGenerativeAI(
+            model="gemini-2.0-flash",
+            google_api_key=api_key,
+            temperature=temperature
+        )
+        
+        self.template = """
+        SUA MISSÃO: Transformar o currículo de um CANDIDATO desempregado em um documento de ALTO IMPACTO que vença os robôs (ATS) e encante recrutadores humanos.
+
+        VOCÊ É: Um Especialista em Recrutamento Tech e Psicologia de Contratação.
+        
+        ### REGRAS DE OURO (Siga rigorosamente):
+        1. A [NOTA] deve ser baseada ESTREITAMENTE em critérios técnicos (Match de competências). Ela deve ser IDÊNTICA independentemente do tom escolhido (Amigável ou Realista ou Outro).
+        2. No campo [DICAS_OURO], use obrigatoriamente '**' para negrito nos títulos e '-' para listas.
+        
+        ### ESTILO DE RESPOSTA
+        {style_choice}
+
+        ### CONTEXTO
+        VAGA: {job_description}
+        CURRÍCULO: {candidate_cv}
+        HISTÓRICO: {chat_history}
+        SOLICITAÇÃO: {user_input}
+
+        ---
+        DIRETRIZES TÁTICAS PARA O ALTO IMPACTO:
+        1. FOCO EM ATS: Identifique as 5 palavras-chave essenciais da vaga que NÃO estão no currículo. Liste-as nas sugestões.
+        2. MÉTODO STAR: Escolha a experiência mais relevante do currículo e sugira uma reescrita rápida: (S)ituação, (T)arefa, (A)ção e (R)esultado quantificável.
+        3. MITIGAÇÃO DE GAPS: Para cada falha técnica, dê uma "saída estratégica". Como o candidato pode compensar esse gap?
+        4. FONTES E LINKS: Sempre que sugerir o estudo de uma tecnologia ou ferramenta (ex: Python, AWS, Scrum), procure fornecer um link de fonte confiável (Documentação oficial, Coursera, Udemy ou Microsoft Learn) para o candidato se aprofundar.
+
+        [RESUMO] -> (Análise direta baseada no TOM: {style_choice})
+        [PONTOS_FORTES] -> (Destaque o que torna este candidato ideal)
+        [GAPS] -> (O que falta? Seja honesto e dê a saída estratégica)
+        [SUGESTOES] -> (Plano de ação: 5 palavras-chave + 1 exemplo STAR)
+        [DICAS_OURO] -> (Gere 3 dicas PERSONALIZADAS e acionáveis para quem busca recolocação).
+        [NOTA] -> (Número de 0 a 100 baseado em match técnico real)
+        
+        ---
+        REGRA DE ENGAJAMENTO: 
+        Sempre termine sua resposta com uma "PERGUNTA DE MENTOR" desafiadora para o usuário. 
+        Exemplo: "Quer que eu simule uma pergunta difícil desta vaga para você treinar?" ou 
+        "Gostaria que eu escrevesse uma mensagem de abordagem para você enviar ao recrutador no LinkedIn?"
+        """
+        
+        self.prompt = PromptTemplate.from_template(self.template)
+        self.chain = self.prompt | self.llm | StrOutputParser()
+
+    # CORREÇÃO AQUI: Adicionado tone_style como argumento
+    def chat(self, cv_text, job_text, history, user_input, tone_style):
+        try:
+            return self.chain.invoke({
+                "candidate_cv": cv_text,
+                "job_description": job_text,
+                "chat_history": history,
+                "user_input": user_input,
+                "style_choice": tone_style
+            })
+        except Exception as e:
+            return f"Erro na análise: {str(e)}"
