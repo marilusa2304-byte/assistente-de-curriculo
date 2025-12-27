@@ -1,4 +1,4 @@
-# [![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://ai-assistente-de-curriculo.streamlit.app)
+# [![Build - Assistente de Currículo](https://github.com/phillrog/assistente-de-curriculo/actions/workflows/build-com-conda.yml/badge.svg)](https://github.com/phillrog/assistente-de-curriculo/actions/workflows/build-com-conda.yml) - [![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://ai-assistente-de-curriculo.streamlit.app)
 
 # 🤖 Assistente de Currículo IA
 
