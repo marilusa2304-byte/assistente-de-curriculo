@@ -3,7 +3,7 @@ import re
 from pypdf import PdfReader
 from datetime import datetime
 from services.assistente_curriculo_service import AssitenteCurriculo 
-from utils.formatadores import extrair_secao, limpar_estilo, limpar_sessao
+from utils.formatadores import extrair_secao, limpar_estilo
 from utils.pdf_utils import gerar_relatorio_pdf
 from components.ui_elements import renderizar_cabecalho, renderizar_gauge, exibir_manual
 
@@ -15,6 +15,9 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
+def limpar_sessao():
+    st.session_state.messages = []
+    st.session_state.cv_content = ""
 
 # 2. Inicialização do Estado (Session State)
 if "messages" not in st.session_state: st.session_state.messages = []
@@ -118,7 +121,7 @@ with st.sidebar:
         "</div>", 
         unsafe_allow_html=True
     )
-
+    
 # 6. CONTEÚDO DINÂMICO
 if not st.session_state.messages:
     with main_placeholder.container():
