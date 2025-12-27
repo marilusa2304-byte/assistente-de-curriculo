@@ -24,3 +24,7 @@ def extrair_secao(texto, tag):
             return match.group(1).strip().strip(':').strip('*').strip()
         return ""
     except: return ""
+
+def limpar_sessao():
+    st.session_state.messages = []
+    st.session_state.cv_content = ""
