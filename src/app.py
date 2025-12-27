@@ -3,7 +3,7 @@ import re
 from pypdf import PdfReader
 from datetime import datetime
 from services.assistente_curriculo_service import AssitenteCurriculo 
-from utils.formatadores import extrair_secao, limpar_estilo
+from utils.formatadores import extrair_secao, limpar_estilo, limpar_sessao
 from utils.pdf_utils import gerar_relatorio_pdf
 from components.ui_elements import renderizar_cabecalho, renderizar_gauge, exibir_manual
 
