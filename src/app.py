@@ -18,12 +18,17 @@ st.set_page_config(
 def limpar_sessao():
     st.session_state.messages = []
     st.session_state.cv_content = ""
+    st.session_state.logs = []
 
 # 2. Inicialização do Estado (Session State)
 if "messages" not in st.session_state: st.session_state.messages = []
 if "cv_content" not in st.session_state: st.session_state.cv_content = ""
 if "tom_estilo" not in st.session_state: st.session_state.tom_estilo = "Seja encorajador, empático e amigável. Foque no potencial e no crescimento."
+if "logs" not in st.session_state: st.session_state.logs = [] 
 
+def adicionar_log(mensagem):
+    hora = datetime.now().strftime("%H:%M:%S")
+    st.session_state.logs.append(f"[{hora}] {mensagem}")
 
 # 3. Interface Visual Fixa
 renderizar_cabecalho()
@@ -65,7 +70,7 @@ with st.sidebar:
         st.caption("💡 **Dica:** Temperaturas baixas tornam as respostas mais assertivas e as notas mais consistentes.")
     else:
         st.caption("🎨 **Dica:** Temperaturas altas aumentam a criatividade, mas as notas podem variar entre análises.")
-
+    
     st.write("---")
     job_desc = st.text_area("🎯 Vaga dos seus Sonhos", height=150)
     uploaded_file = st.file_uploader("📂 Seu Currículo Atual (PDF)", type="pdf")
@@ -80,6 +85,7 @@ with st.sidebar:
 
     if btn_iniciar:
         if api_key and job_desc and uploaded_file:
+            adicionar_log("Iniciando processo de análise...")
             with main_placeholder.container():
                 st.markdown(f"""
                     <div class="loader-overlay">
@@ -90,9 +96,15 @@ with st.sidebar:
                 """, unsafe_allow_html=True)
 
                 try:
+                    adicionar_log("Lendo arquivo PDF...")
                     reader = PdfReader(uploaded_file)
                     st.session_state.cv_content = "".join([p.extract_text() for p in reader.pages])
+                    adicionar_log(f"PDF lido: {len(st.session_state.cv_content)} caracteres extraídos.")
+                    
+                    adicionar_log("Conectando ao Gemini 2.0 Flash via LangChain...")
                     analyzer = AssitenteCurriculo(api_key, temperature=temp_value)
+                    
+                    adicionar_log("Enviando prompt de análise estratégica...")
                     res = analyzer.chat(
                         st.session_state.cv_content, 
                         job_desc, 
@@ -100,17 +112,21 @@ with st.sidebar:
                         "Analise meu currículo agora seguindo o formato de tags [RESUMO], [PONTOS_FORTES], [GAPS], [SUGESTOES], [DICAS_OURO] e [NOTA].",
                         st.session_state.tom_estilo
                     )
+                    
+                    adicionar_log("Análise recebida com sucesso!")
                     st.session_state.messages = [{"role": "assistant", "content": res}] 
                     
                     st.components.v1.html("""<script>var b = window.parent.document.querySelector('button[data-testid="stSidebarCollapseButton"]'); if(b) b.click();</script>""", height=0)
                     st.rerun()
                 except Exception as e:
+                    adicionar_log(f"ERRO: {str(e)}")
                     main_placeholder.empty()
                     st.error(f"Erro: {e}")
         else:
             st.warning("Preencha todos os campos para continuar.")
 
     if btn_limpar:
+        adicionar_log("Limpando histórico e sessão.")
         limpar_sessao()
         st.rerun()
         
@@ -129,6 +145,15 @@ with st.sidebar:
         "</div>", 
         unsafe_allow_html=True
     )
+    
+    # --- LOG VISUAL (NOVA SEÇÃO) ---
+    st.write("---")
+    with st.expander("🛠️ Logs do Sistema", expanded=False):
+        if st.session_state.logs:
+            for log in reversed(st.session_state.logs):
+                st.caption(log)
+        else:
+            st.caption("Aguardando atividades...")    
     
 # 6. CONTEÚDO DINÂMICO
 if not st.session_state.messages:
@@ -157,6 +182,7 @@ if not st.session_state.messages:
             st.markdown("#### 4. Analisar\nClique em 'Analisar' e receba seu feedback completo!")
 
         st.markdown("---")
+        st.markdown("### ⚙️ Por trás do código:")
         st.write("Configura a análise na barra lateral para começarmos a trabalhar no seu sucesso.")
         c1, c2, c3 = st.columns(3)
         c1.markdown("#### 💎 Valorização\nIdentificamos o que você tem de melhor.")
@@ -240,6 +266,7 @@ if prompt := st.chat_input("Pergunte algo ao Assistente..."):
     if not st.session_state.cv_content:
         st.error("Realize a análise inicial primeiro!")
     else:
+        adicionar_log(f"Usuário perguntou: '{prompt}'")
         st.session_state.messages.append({"role": "user", "content": prompt})
         st.rerun()
 
@@ -252,9 +279,11 @@ st.warning("""
 if len(st.session_state.messages) > 0 and st.session_state.messages[-1]["role"] == "user":
     with st.chat_message("assistant"):
         with st.spinner("Preparando resposta..."):
+            adicionar_log("Gerando resposta baseada no histórico do chat...")
             analyzer = AssitenteCurriculo(api_key, temperature=temp_value)
             analise_contexto = st.session_state.messages[0]["content"]
             hist = f"CONTEXTO DA ANÁLISE:\n{analise_contexto}"
             response = analyzer.chat(st.session_state.cv_content, job_desc, hist, st.session_state.messages[-1]["content"], st.session_state.tom_estilo)
+            adicionar_log("Resposta do chat gerada.")
             st.markdown(response)
             st.session_state.messages.append({"role": "assistant", "content": response})
