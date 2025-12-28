@@ -159,7 +159,11 @@ DIRETRIZES TÁTICAS PARA O ALTO IMPACTO:
 [RESUMO] -> (Análise direta baseada no TOM: Seja encorajador, empático e amigável. Foque no potencial e no crescimento.)
 [PONTOS_FORTES] -> (Destaque o que torna este candidato ideal)
 [GAPS] -> (O que falta? Seja honesto e dê a saída estratégica)
-[SUGESTOES] -> (Plano de ação: 5 palavras-chave + 1 exemplo STAR)
+[SUGESTOES] -> 
+- 🔑 **5 Palavras-chave:** (Liste-as aqui)
+- 🚀 **Método STAR:** (Exemplo de reescrita)
+- 💡 **Storytelling:** (Insight de narrativa)
+- 📚 **CURADORIA DE LINKS:** (Para cada GAP técnico citado acima, forneça obrigatoriamente um link [Nome](URL) seguindo a Diretriz 6)
 [DICAS_OURO] -> (Gere 3 dicas PERSONALIZADAS e acionáveis para quem busca recolocação).
 [NOTA] -> (Número de 0 a 100 baseado em match técnico real)
 
